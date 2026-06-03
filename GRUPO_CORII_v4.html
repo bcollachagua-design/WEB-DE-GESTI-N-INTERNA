@@ -579,6 +579,7 @@ table.no-comp .comp-col { display:none; }
   <button class="nb" onclick="go('igv',this)"><span class="nb-ico">◆</span> Reporte IGV</button>
   <button class="nb" onclick="go('bancos',this)"><span class="nb-ico">⬡</span> Bancos</button>
   <button class="nb" onclick="go('cronograma',this)"><span class="nb-ico">📅</span> Cronograma</button>
+  <button class="nb" onclick="go('caja',this)"><span class="nb-ico">💵</span> Caja</button>
   <button class="nb" onclick="go('importar',this)"><span class="nb-ico">⬆</span> Importar EECC</button>
   <button class="nb" onclick="go('clientes',this)"><span class="nb-ico">◐</span> Clientes</button>
   <button class="nb" onclick="go('proveedores',this)"><span class="nb-ico">◑</span> Proveedores</button>
@@ -1064,7 +1065,14 @@ table.no-comp .comp-col { display:none; }
         <span class="pt">Historial de Operaciones</span>
         <span id="h-count-lbl" style="margin-left:8px;font-size:11px;color:var(--txt3);font-family:'DM Mono',monospace"></span>
       </div>
-      <button class="btn btn-sm btn-navy" onclick="exportCSV()">↓ Exportar CSV</button>
+      <div style="position:relative;display:inline-block">
+        <button class="btn btn-sm btn-navy" onclick="toggleExportMenu()" id="export-btn" style="display:flex;align-items:center;gap:6px">↓ Exportar <span style="font-size:9px">▼</span></button>
+        <div id="export-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--brd2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:100;min-width:150px;overflow:hidden">
+          <button onclick="exportCSV();toggleExportMenu()" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--navy);border-bottom:1px solid var(--brd2)" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='none'">📄 CSV</button>
+          <button onclick="exportExcel();toggleExportMenu()" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--navy);border-bottom:1px solid var(--brd2)" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='none'">📊 Excel (.xlsx)</button>
+          <button onclick="exportPDF();toggleExportMenu()" style="width:100%;text-align:left;padding:9px 14px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--navy)" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='none'">📑 PDF</button>
+        </div>
+      </div>
     </div>
 
     <!-- Filtros colapsables -->
@@ -1883,7 +1891,8 @@ var VENTAS_DATA = [{"fecha":"2019-09-28","nfact":"F001-00051","serie":"Serie I",
 {"nfact":"F001-00634","fecha":"2026-05-21","serie":"Serie I","serieNom":"Alquiler de Maquinaria Pesada","cliente":"PALMANOVA INGENIEROS S.A.C.","ruc":"20604605343","desc":"ALQUILER EXCAVADORA HYUNDAI HX340SL 01/05-15/05/2026 VAL 009-2026","moneda":"PEN","base":16006.0,"igv":2881.08,"total":18887.08,"detPct":10,"det":1888.71,"acancel":16998.37,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 05/06/2026","venc":"2026-06-05","det_monto":1888.71,"det_fecha":"","det_pagada":false,"abono":0,"saldo":18887.08,"abonos":[]},
 {"nfact":"F002-00706","fecha":"2026-05-21","serie":"Serie II","serieNom":"Transporte","cliente":"CORTRANS PERU LOGISTIC E.I.R.L.","ruc":"20605558250","desc":"SERVICIO DE TRANSPORTE PUENTE PIEDRA-LIMA HASTA CARRETERA CENTRAL ATE VITARTE EXCAVADORA MODELO CAT 313GC","moneda":"PEN","base":1400.0,"igv":252.0,"total":1652.0,"detPct":4,"det":66.08,"acancel":1585.92,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 22/05/2026","venc":"2026-05-22","det_monto":66.08,"det_fecha":"","det_pagada":false,"abono":0,"saldo":1652.0,"abonos":[]},
 {"nfact":"F002-00707","fecha":"2026-05-22","serie":"Serie II","serieNom":"Transporte","cliente":"CORTRANS PERU LOGISTIC E.I.R.L.","ruc":"20605558250","desc":"SERVICIO DE TRANSPORTE PUENTE PIEDRA-LIMA HASTA CARRETERA CENTRAL ATE VITARTE EXCAVADORA MODELO CAT 313GC","moneda":"PEN","base":1500.0,"igv":270.0,"total":1770.0,"detPct":4,"det":70.8,"acancel":1699.2,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 23/05/2026","venc":"2026-05-23","det_monto":70.8,"det_fecha":"","det_pagada":false,"abono":0,"saldo":1770.0,"abonos":[]},
-{"nfact":"F002-00708","fecha":"2026-05-23","serie":"Serie II","serieNom":"Transporte","cliente":"VERA PERU S.A.C.","ruc":"20523102291","desc":"SERVICIO DE TRANSPORTE DESDE SEDAPAL HUAC HIPA HASTA BARBADILLO ATE EG03-0000098","moneda":"PEN","base":762.71,"igv":137.29,"total":900.0,"detPct":4,"det":36.0,"acancel":864.0,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 24/05/2026","venc":"2026-05-24","det_monto":36.0,"det_fecha":"","det_pagada":false,"abono":0,"saldo":900.0,"abonos":[]}];
+{"nfact":"F002-00708","fecha":"2026-05-23","serie":"Serie II","serieNom":"Transporte","cliente":"VERA PERU S.A.C.","ruc":"20523102291","desc":"SERVICIO DE TRANSPORTE DESDE SEDAPAL HUAC HIPA HASTA BARBADILLO ATE EG03-0000098","moneda":"PEN","base":762.71,"igv":137.29,"total":900.0,"detPct":4,"det":36.0,"acancel":864.0,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 24/05/2026","venc":"2026-05-24","det_monto":36.0,"det_fecha":"","det_pagada":false,"abono":0,"saldo":900.0,"abonos":[]},
+{"nfact":"F002-00709","fecha":"2026-05-26","serie":"Serie II","serieNom":"Transporte","cliente":"CORTRANS PERU LOGISTIC E.I.R.L.","ruc":"20605558250","desc":"TRANSPORTE EXCAVADORA CAT 313CG SEGUN GUIAS T018-00000074/75","moneda":"PEN","base":20000.0,"igv":3600.0,"total":23600.0,"detPct":4,"det":944.0,"acancel":22656.0,"tc":0,"estado":"PENDIENTE","forma":"Crédito","banco":"","fpago":"","obs":"Vence 29/05/2026","venc":"2026-05-29","det_monto":944.0,"det_fecha":"","det_pagada":false,"abono":0,"saldo":23600.0,"abonos":[]}];
 var COMPRAS_DATA = [
 {"id":3000,"periodo":"2026-01","fecha":"2025-12-03","tdoc":"1","serie":"F052","num":"1979148","ncomp":"F052-1979148","ruc":"20418896915","proveedor":"MAPFRE PERU COMPAÑIA DE SEGUROS Y REASEGUROS","equipo":"","desc":"","base":8.25,"igv":1.49,"no_grav":0.0,"total":9.74,"moneda":"PEN","tc":3.365,"base_refe":0.0,"caja":"BANCO","fpForm":"","estado_cpe":"Activo","detraccion_sunat":"Inafecto","estado":"PAGADO"},
 {"id":3001,"periodo":"2026-01","fecha":"2025-12-02","tdoc":"1","serie":"F201","num":"5654","ncomp":"F201-5654","ruc":"20285579814","proveedor":"ESTACION DE SERVICIOS PASTOR S.R.LTDA.","equipo":"","desc":"","base":101.69,"igv":18.31,"no_grav":0.0,"total":120.0,"moneda":"PEN","tc":3.362,"base_refe":0.0,"caja":"BANCO","fpForm":"","estado_cpe":"Activo","detraccion_sunat":"Inafecto","estado":"PAGADO"},
@@ -2531,7 +2540,8 @@ proveedores:[
   {id:19,fem:'2026-05-21',nf:'F001-00634',cli:'PALMANOVA INGENIEROS S.A.C.',monto:18887.08,det:10,detMonto:1888.71,abono:0,saldo:18887.08,venc:'2026-06-05',obs:'Vence 05/06/2026',estado:'PENDIENTE'},
   {id:20,fem:'2026-05-21',nf:'F002-00706',cli:'CORTRANS PERU LOGISTIC E.I.R.L.',monto:1652.0,det:4,detMonto:66.08,abono:0,saldo:1652.0,venc:'2026-05-22',obs:'Vence 22/05/2026',estado:'PENDIENTE'},
   {id:21,fem:'2026-05-22',nf:'F002-00707',cli:'CORTRANS PERU LOGISTIC E.I.R.L.',monto:1770.0,det:4,detMonto:70.8,abono:0,saldo:1770.0,venc:'2026-05-23',obs:'Vence 23/05/2026',estado:'PENDIENTE'},
-  {id:22,fem:'2026-05-23',nf:'F002-00708',cli:'VERA PERU S.A.C.',monto:900.0,det:4,detMonto:36.0,abono:0,saldo:900.0,venc:'2026-05-24',obs:'Vence 24/05/2026',estado:'PENDIENTE'}
+  {id:22,fem:'2026-05-23',nf:'F002-00708',cli:'VERA PERU S.A.C.',monto:900.0,det:4,detMonto:36.0,abono:0,saldo:900.0,venc:'2026-05-24',obs:'Vence 24/05/2026',estado:'PENDIENTE'},
+  {id:23,fem:'2026-05-26',nf:'F002-00709',cli:'CORTRANS PERU LOGISTIC E.I.R.L.',monto:23600.0,det:4,detMonto:944.0,abono:0,saldo:23600.0,venc:'2026-05-29',obs:'Vence 29/05/2026',estado:'PENDIENTE'}
 ],
 nid:10000};
 
@@ -2576,6 +2586,7 @@ var NAV_FNS={
   cobrar:function(){populateCob();renderCob();},
   igv:renderIGV,
   cronograma:function(){if(typeof cronInit!=='undefined'&&_cronData.length===0)cronInit();cronRender();},
+  caja:function(){renderCaja();},
   bancos:renderBancos,
   clientes:renderCli,
   proveedores:renderProv
@@ -3551,6 +3562,101 @@ function renderH(){
       '<td><span class="bdg '+estCls+'" style="font-size:8.5px">'+(o.estado||'—')+'</span></td>'+
       '<td style="text-align:center">'+abonoBtn+'</td></tr>';
   }).join('');
+}
+
+function toggleExportMenu(){
+  var m=getEl('export-menu');
+  if(m) m.style.display=m.style.display==='none'?'block':'none';
+  // Cerrar al hacer clic fuera
+  setTimeout(function(){
+    document.onclick=function(e){
+      if(!e.target.closest('#export-btn')&&!e.target.closest('#export-menu')){
+        var m2=getEl('export-menu'); if(m2)m2.style.display='none';
+        document.onclick=null;
+      }
+    };
+  },10);
+}
+
+function exportExcel(){
+  // Construir tabla HTML que Excel pueda abrir
+  var ops=getOpsParaExport();
+  var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
+  html+='<head><meta charset="UTF-8"><style>th{background:#1e3a5f;color:#fff;font-size:11px;padding:6px}td{font-size:11px;padding:5px;border:1px solid #ddd}</style></head><body><table>';
+  html+='<tr><th>Fecha</th><th>Tipo</th><th>Serie</th><th>N° Comp.</th><th>Contraparte</th><th>Descripción</th><th>Base S/</th><th>IGV S/</th><th>Total S/</th><th>Total $</th><th>Moneda</th><th>Estado</th></tr>';
+  ops.forEach(function(o){
+    html+='<tr>'+
+      '<td>'+o.fecha+'</td>'+
+      '<td>'+(o._tipo==='venta'?'Venta':'Compra')+'</td>'+
+      '<td>'+(o.serie||o.tdoc||'')+'</td>'+
+      '<td>'+(o.nfact||o.ncomp||'')+'</td>'+
+      '<td>'+(o.contra||'')+'</td>'+
+      '<td>'+(o.desc||o.glosa||'')+'</td>'+
+      '<td style="text-align:right">'+(o.base||0).toFixed(2)+'</td>'+
+      '<td style="text-align:right">'+(o.igv||0).toFixed(2)+'</td>'+
+      '<td style="text-align:right">'+(o.total||0).toFixed(2)+'</td>'+
+      '<td style="text-align:right">'+(o.base_refe||'')+'</td>'+
+      '<td>'+(o.moneda||'PEN')+'</td>'+
+      '<td>'+(o.estado||'')+'</td>'+
+    '</tr>';
+  });
+  html+='</table></body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Historial_GrupoCorii_'+new Date().toISOString().slice(0,10)+'.xls';
+  a.click();
+}
+
+function exportPDF(){
+  var ops=getOpsParaExport();
+  var lbl=''; if(HF.mes!=='todos')lbl+=' · '+HF.mes; if(HF.year!=='todos')lbl+=' · '+HF.year;
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Historial - Grupo Corii</title>';
+  html+='<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}';
+  html+='body{padding:20px;font-size:10px}';
+  html+='.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #1e3a5f}';
+  html+='.title{font-size:16px;font-weight:700;color:#1e3a5f}';
+  html+='.sub{font-size:10px;color:#666;margin-top:3px}';
+  html+='table{width:100%;border-collapse:collapse;margin-top:10px}';
+  html+='th{background:#1e3a5f;color:#fff;padding:6px 8px;text-align:left;font-size:9px}';
+  html+='td{padding:5px 8px;border-bottom:1px solid #e5e7eb;font-size:9px}';
+  html+='tr:nth-child(even)td{background:#f9fafb}';
+  html+='@media print{body{padding:10px}}</style></head><body>';
+  html+='<div class="header"><div><div class="title">GRUPO CORII S.A.C. — Historial de Operaciones</div>';
+  html+='<div class="sub">RUC 20511702021 · '+lbl+' · Generado: '+new Date().toLocaleDateString('es-PE')+'</div></div></div>';
+  html+='<table><thead><tr><th>Fecha</th><th>Tipo</th><th>N° Comp.</th><th>Contraparte</th><th>Descripción</th><th style="text-align:right">Base S/</th><th style="text-align:right">IGV S/</th><th style="text-align:right">Total S/</th><th>Mon.</th><th>Estado</th></tr></thead><tbody>';
+  ops.forEach(function(o){
+    html+='<tr>'+
+      '<td>'+o.fecha+'</td>'+
+      '<td>'+(o._tipo==='venta'?'Venta':'Compra')+'</td>'+
+      '<td><b>'+(o.nfact||o.ncomp||'')+'</b></td>'+
+      '<td>'+(o.contra||'').slice(0,25)+'</td>'+
+      '<td>'+(o.desc||o.glosa||'').slice(0,35)+'</td>'+
+      '<td style="text-align:right">'+(o.base||0).toFixed(2)+'</td>'+
+      '<td style="text-align:right">'+(o.igv||0).toFixed(2)+'</td>'+
+      '<td style="text-align:right"><b>'+(o.total||0).toFixed(2)+'</b></td>'+
+      '<td>'+(o.moneda||'PEN')+'</td>'+
+      '<td>'+(o.estado||'')+'</td>'+
+    '</tr>';
+  });
+  html+='</tbody></table></body></html>';
+  var win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.onload=function(){win.print();};
+}
+
+function getOpsParaExport(){
+  var ops=[];
+  S.ventas.forEach(function(v){ops.push(Object.assign({},v,{_tipo:'venta',contra:v.cliente,fecha:v.fecha}));});
+  S.compras.forEach(function(c){ops.push(Object.assign({},c,{_tipo:'compra',contra:c.proveedor,fecha:c.fecha||c.periodo+'-01'}));});
+  ops.sort(function(a,b){return b.fecha>a.fecha?1:b.fecha<a.fecha?-1:0;});
+  if(HF.tipo!=='todos') ops=ops.filter(function(o){return o._tipo===HF.tipo;});
+  if(HF.mes!=='todos') ops=ops.filter(function(o){return (o.fecha||'').startsWith(HF.mes);});
+  if(HF.year!=='todos') ops=ops.filter(function(o){return (o.fecha||'').startsWith(HF.year);});
+  var bus=(getVal('h-bus')||'').toLowerCase();
+  if(bus) ops=ops.filter(function(o){return ((o.contra||'')+(o.nfact||o.ncomp||'')+(o.desc||'')).toLowerCase().includes(bus);});
+  return ops;
 }
 
 function exportCSV(){
@@ -4643,15 +4749,6 @@ var CONCIL_MAP = {
   '092519':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/1000.00',modulo:'caja',manual:true},
   '132737':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/2000.00',modulo:'caja',manual:true},
   '010437':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/1000.00',modulo:'caja',manual:true},
-  '301736':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/4200.00',modulo:'caja',manual:true},
-  '172712':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/2000.00',modulo:'caja',manual:true},
-  '110872':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/2000.00',modulo:'caja',manual:true},
-  '016924':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/1000.00',modulo:'caja',manual:true},
-  '001204':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/2000.00',modulo:'caja',manual:true},
-  '092519':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/1000.00',modulo:'caja',manual:true},
-  '132737':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/2000.00',modulo:'caja',manual:true},
-  '010437':{ref:'EFECTIVO - CAJA / COLLACHAGUA RIVERA B.K. S/1000.00',modulo:'caja',manual:true}
-,
   'F001-00618':{ref:'F001-00618 SEMBRANDO CONCIENCIA AMBIENTAL S.',modulo:'detrac_ok'},
   'F001-00617':{ref:'F001-00617 SEMBRANDO CONCIENCIA AMBIENTAL S.A.',modulo:'detrac_ok'},
   'F002-00663':{ref:'F002-00663 SINOHYDRO CORPORATION LIMITED',modulo:'detrac_ok'},
@@ -4674,8 +4771,7 @@ var CONCIL_MAP = {
   'F002-00681':{ref:'F002-00681 FERROCARRIL CENTRAL ANDINO S/189',modulo:'detrac_ok'},
   'F001-00627':{ref:'F001-00627 PALMANOVA INGENIEROS S/1989',modulo:'detrac_ok'},
   'F002-00684':{ref:'F002-00684 NAHUI GALA FRANCO S/189',modulo:'detrac_ok'},
-  'F002-00683':{ref:'F002-00683 BRYCORP CORPORATION S/71',modulo:'detrac_ok'}
-,
+  'F002-00683':{ref:'F002-00683 BRYCORP CORPORATION S/71',modulo:'detrac_ok'},
   'BN-0704':{ref:'F002-00686 TRANSPORTE ASESORES LOGISTICOS S.A. S/113.00',modulo:'detrac'},
   'BN-2704':{ref:'F001-00629 PALMANOVA INGENIEROS S.A.C. S/2,019.00',modulo:'detrac'}
 };
@@ -6824,6 +6920,65 @@ window.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- ══ IMPORTAR EECC ══ -->
+<!-- ══ MÓDULO CAJA ══ -->
+<div class="sec" id="s-caja">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <div>
+      <div style="font-size:20px;font-weight:800;color:var(--navy)">💵 Efectivo — Caja</div>
+      <div style="font-size:12px;color:var(--txt3);margin-top:2px">Movimientos de caja: ingresos desde banco y pagos a proveedores</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="caja-mes-sel" onchange="renderCaja()" style="padding:6px 12px;border:1px solid var(--brd2);border-radius:8px;font-size:12px;font-weight:600;background:#fff">
+        <option value="">Todos los meses</option>
+        <option value="2026-01">Enero 2026</option>
+        <option value="2026-02">Febrero 2026</option>
+        <option value="2026-03">Marzo 2026</option>
+        <option value="2026-04">Abril 2026</option>
+        <option value="2026-05">Mayo 2026</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tarjetas resumen -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:14px 16px;border-left:4px solid #16a34a">
+      <div style="font-size:9.5px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">↑ Ingresos a Caja</div>
+      <div id="caja-ingresos" style="font-size:20px;font-weight:700;color:#16a34a">S/ 0.00</div>
+      <div id="caja-ingresos-n" style="font-size:10px;color:#15803d;margin-top:2px">0 movimientos</div>
+    </div>
+    <div style="background:#fff1f2;border:1px solid #fda4af;border-radius:12px;padding:14px 16px;border-left:4px solid #dc2626">
+      <div style="font-size:9.5px;font-weight:700;color:#be123c;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">↓ Salidas de Caja</div>
+      <div id="caja-salidas" style="font-size:20px;font-weight:700;color:#dc2626">S/ 0.00</div>
+      <div id="caja-salidas-n" style="font-size:10px;color:#be123c;margin-top:2px">0 operaciones</div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:12px;padding:14px 16px;border-left:4px solid #2563eb">
+      <div style="font-size:9.5px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">= Saldo Caja</div>
+      <div id="caja-saldo" style="font-size:20px;font-weight:700;color:#2563eb">S/ 0.00</div>
+      <div id="caja-saldo-lbl" style="font-size:10px;color:#1d4ed8;margin-top:2px">—</div>
+    </div>
+  </div>
+
+  <!-- Tabla de movimientos -->
+  <div style="background:#fff;border:1px solid var(--brd2);border-radius:12px;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="background:var(--navy);color:#fff">
+          <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px">FECHA</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px">TIPO</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px">DESCRIPCIÓN</th>
+          <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px">BANCO/PROVEEDOR</th>
+          <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;letter-spacing:.5px">INGRESO</th>
+          <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;letter-spacing:.5px">SALIDA</th>
+          <th style="padding:10px 14px;text-align:right;font-size:10px;font-weight:600;letter-spacing:.5px">SALDO</th>
+        </tr>
+      </thead>
+      <tbody id="caja-tbody">
+        <tr><td colspan="7"><div class="empty">Selecciona un mes para ver los movimientos</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <div class="sec" id="s-importar">
 <div style="max-width:820px;margin:0 auto">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
@@ -7064,6 +7219,110 @@ function cronSave(){
     if(typeof showSavedIndicator==='function')showSavedIndicator('Guardado');
   }catch(e){}
 }
+function renderCaja(){
+  var mes = (getEl('caja-mes-sel')||{}).value || '';
+  var movs = [];
+
+  // 1. Movimientos bancarios conciliados como 'caja'
+  // Un cargo bancario (retiro) = INGRESO a caja física
+  // Un abono bancario (depósito desde caja) = SALIDA de caja
+  var BANCOS_KEYS = ['sol','usd','ibk','bbva_sol','bbva_usd'];
+  var BANCO_NAMES2 = {sol:'BCP Soles',usd:'BCP Dólares',ibk:'Interbank',bbva_sol:'BBVA Soles',bbva_usd:'BBVA Dólares',bn:'BN Detrac'};
+  BANCOS_KEYS.forEach(function(tab){
+    var eecc = EECC[tab];
+    if(!eecc) return;
+    var meses = mes ? [mes.slice(5,7)] : ['01','02','03','04','05'];
+    meses.forEach(function(m){
+      var data = eecc[m];
+      if(!data) return;
+      data.forEach(function(r){
+        var concilKey = (r.nop && r.nop!=='-') ? r.nop
+          : 'SIN-'+(r.f||'').replace('-','')+'-'+(r.desc||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,12).toUpperCase();
+        var cm = CONCIL_MAP[concilKey];
+        if(!cm || cm.modulo!=='caja') return;
+        var sym = (tab==='usd'||tab==='bbva_usd') ? '$ ' : 'S/ ';
+        // Cargo = retiro del banco = ingreso a caja
+        // Abono = depósito al banco = salida de caja
+        var monto = r.cargo>0 ? r.cargo : r.abono;
+        var esIngreso = r.cargo > 0; // retiro del banco → entra a caja
+        var fechaStr = '2026-'+(r.f||'').replace(/^(\d{2})-(\d{2})$/,'$2-$1');
+        movs.push({
+          fecha: fechaStr,
+          tipo: esIngreso ? 'INGRESO' : 'SALIDA',
+          desc: cm.ref || r.desc,
+          contraparte: BANCO_NAMES2[tab]||tab,
+          monto: monto,
+          sym: sym,
+          esIngreso: esIngreso,
+          src: 'banco'
+        });
+      });
+    });
+  });
+
+  // 2. Compras pagadas con CAJA (F.Pago = caja) = SALIDAS de caja
+  S.compras.forEach(function(co){
+    if(!co.id) return;
+    var fpKey = 'fp_'+co.id;
+    var fp = (_CENTRO_COSTO[fpKey]||'').toLowerCase();
+    if(fp.indexOf('caja')<0) return;
+    var fecha = co.fecha||(co.periodo?co.periodo+'-01':'2026-01-01');
+    if(mes && !fecha.startsWith(mes)) return;
+    movs.push({
+      fecha: fecha,
+      tipo: 'SALIDA',
+      desc: (co.ncomp||'')+(co.proveedor?' — '+co.proveedor.slice(0,30):''),
+      contraparte: (co.proveedor||'').slice(0,25),
+      monto: Math.abs(co.total||0),
+      sym: 'S/ ',
+      esIngreso: false,
+      src: 'compra'
+    });
+  });
+
+  // Ordenar por fecha
+  movs.sort(function(a,b){ return a.fecha>b.fecha?1:a.fecha<b.fecha?-1:0; });
+
+  // Calcular totales y saldo corriente
+  var totalIngresos=0, totalSalidas=0, saldoAcum=0;
+  var nIngresos=0, nSalidas=0;
+
+  var rows = movs.map(function(m){
+    if(m.esIngreso){ totalIngresos+=m.monto; nIngresos++; saldoAcum+=m.monto; }
+    else { totalSalidas+=m.monto; nSalidas++; saldoAcum-=m.monto; }
+    var saldoColor = saldoAcum>=0?'#16a34a':'#dc2626';
+    var tipoBadge = m.esIngreso
+      ? '<span style="background:#f0fdf4;color:#16a34a;border:1px solid #86efac;border-radius:8px;padding:2px 8px;font-size:9px;font-weight:700">↑ INGRESO</span>'
+      : '<span style="background:#fff1f2;color:#dc2626;border:1px solid #fda4af;border-radius:8px;padding:2px 8px;font-size:9px;font-weight:700">↓ SALIDA</span>';
+    var srcBadge = m.src==='compra'
+      ? '<span style="font-size:8px;background:#fef3c7;color:#92400e;border-radius:6px;padding:1px 5px;margin-left:4px">Compra</span>'
+      : '<span style="font-size:8px;background:#eff6ff;color:#1d4ed8;border-radius:6px;padding:1px 5px;margin-left:4px">Banco</span>';
+    return '<tr style="border-bottom:1px solid var(--brd2)">'+
+      '<td style="padding:9px 14px;font-size:11px;color:var(--txt2);white-space:nowrap">'+m.fecha+'</td>'+
+      '<td style="padding:9px 14px">'+tipoBadge+srcBadge+'</td>'+
+      '<td style="padding:9px 14px;font-size:11px;color:var(--navy);max-width:280px">'+m.desc+'</td>'+
+      '<td style="padding:9px 14px;font-size:11px;color:var(--txt3)">'+m.contraparte+'</td>'+
+      '<td style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;color:#16a34a">'+(m.esIngreso?m.sym+fmtN(m.monto):'—')+'</td>'+
+      '<td style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;color:#dc2626">'+(!m.esIngreso?m.sym+fmtN(m.monto):'—')+'</td>'+
+      '<td style="padding:9px 14px;text-align:right;font-size:12px;font-weight:700;color:'+saldoColor+'">S/ '+fmtN(saldoAcum)+'</td>'+
+    '</tr>';
+  }).join('');
+
+  // Actualizar tarjetas resumen
+  setEl('caja-ingresos','S/ '+fmtN(totalIngresos));
+  setEl('caja-ingresos-n',nIngresos+' movimiento'+(nIngresos!==1?'s':''));
+  setEl('caja-salidas','S/ '+fmtN(totalSalidas));
+  setEl('caja-salidas-n',nSalidas+' operaci'+(nSalidas!==1?'ones':'ón'));
+  var saldoFinal = totalIngresos - totalSalidas;
+  var saldoEl=getEl('caja-saldo');
+  if(saldoEl){saldoEl.textContent='S/ '+fmtN(Math.abs(saldoFinal));saldoEl.style.color=saldoFinal>=0?'#2563eb':'#dc2626';}
+  setEl('caja-saldo-lbl', saldoFinal>0?'Saldo disponible':saldoFinal<0?'Déficit de caja':'Sin movimientos');
+
+  var tb=getEl('caja-tbody');
+  if(!tb)return;
+  tb.innerHTML = rows || '<tr><td colspan="7"><div class="empty" style="padding:30px">Sin movimientos de caja'+(mes?' en '+mes:'')+'<br><small style="color:var(--txt3)">Concilia movimientos bancarios como "Efectivo-Caja" o marca compras con F.Pago = Caja</small></div></td></tr>';
+}
+
 function cronRender(){
   var mes=(getEl('cron-mes-sel')||{}).value||'2026-05';
   var rows=mes==='todos'?_cronData.slice():_cronData.filter(function(r){return r.fecha.slice(0,7)===mes;});
